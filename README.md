@@ -1,19 +1,6 @@
-<!--
-title: 'Serverless Framework Node Express API service backed by DynamoDB on AWS'
-description: 'This template demonstrates how to develop and deploy a simple Node Express API service backed by DynamoDB running on AWS Lambda using the traditional Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: nodeJS
-priority: 1
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Etrade Stock Price Crawler
 
-# Serverless Framework Node Express API on AWS
-
-This template demonstrates how to develop and deploy a simple Node Express API service, backed by DynamoDB database, running on AWS Lambda using the traditional Serverless Framework.
+A cronjob utilized Serverless Framework with Node Express API to fetch stock price utilizing E*TRADE API and store it to AWS DynamoDB. 
 
 
 ## Anatomy of the template
@@ -24,19 +11,8 @@ This template configures a single function, `api`, which is responsible for hand
 
 ### Deployment
 
-Install dependencies with:
-
-```
-npm install
-```
-
-and then deploy with:
-
-```
-serverless deploy
-```
-
-After running deploy, you should see output similar to:
+The github action is responsible for deploying lambda/IAM role to AWS using `SERVERLESS_ACCESS_KEY`. 
+You should see output in the github action similar to:
 
 ```bash
 Deploying aws-node-express-dynamodb-api-project to stage dev (us-east-1)
@@ -50,37 +26,6 @@ functions:
 
 _Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [`httpApi` event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api/). Additionally, in current configuration, the DynamoDB table will be removed when running `serverless remove`. To retain the DynamoDB table even after removal of the stack, add `DeletionPolicy: Retain` to its resource definition.
 
-### Invocation
-
-After successful deployment, you can create a new user by calling the corresponding endpoint:
-
-```bash
-curl --request POST 'https://xxxxxx.execute-api.us-east-1.amazonaws.com/users' --header 'Content-Type: application/json' --data-raw '{"name": "John", "userId": "someUserId"}'
-```
-
-Which should result in the following response:
-
-```bash
-{"userId":"someUserId","name":"John"}
-```
-
-You can later retrieve the user by `userId` by calling the following endpoint:
-
-```bash
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/users/someUserId
-```
-
-Which should result in the following response:
-
-```bash
-{"userId":"someUserId","name":"John"}
-```
-
-If you try to retrieve user that does not exist, you should receive the following response:
-
-```bash
-{"error":"Could not find user with provided \"userId\""}
-```
 
 ### Local development
 

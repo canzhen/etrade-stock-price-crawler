@@ -4,11 +4,13 @@ service: ticker-1000-price-crawler
 frameworkVersion: '3'
 
 custom:
-  tableName: 'users-table-${sls:stage}'
+  tableName: 'stock_price'
 
 provider:
   name: aws
+  region: us-east-2
   runtime: nodejs18.x
+  timeout: 300
   iam:
     role:
       statements:
@@ -20,27 +22,31 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-          Resource:
-            - Fn::GetAtt: [ UsersTable, Arn ]
+          Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.tableName}'
+        - Effect: Allow
+          Action:
+            - ssm:GetParameters
+            - ssm:DescribeParameters
+          Resource: '*'
   environment:
     USERS_TABLE: ${self:custom.tableName}
 
 functions:
   api:
-    handler: index.handler
+    handler: app.handler
     events:
       - httpApi: '*'
 
-resources:
-  Resources:
-    UsersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
-        KeySchema:
-          - AttributeName: userId
-            KeyType: HASH
-        BillingMode: PAY_PER_REQUEST
-        TableName: ${self:custom.tableName}
+# resources:
+#   Resources:
+#     StockPriceTable:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         AttributeDefinitions:
+#           - AttributeName: ticker_name
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: ticker_name
+#             KeyType: HASH
+#         BillingMode: PAY_PER_REQUEST
+#         TableName: ${self:custom.tableName}
